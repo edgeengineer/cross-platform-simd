@@ -1,69 +1,21 @@
 name: Swift
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+on: [push]
 
 jobs:
-  test-macos:
-    name: Test on macOS
-    runs-on: macos-latest
+  build:
+    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
     strategy:
       matrix:
-        swift: ['6.0', '6.0.1', '6.0.2', '6.0.3']
+        os: [ubuntu-latest, macos-latest]
+        swift: ["6.1"]
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Select Xcode
-      run: sudo xcode-select -s /Applications/Xcode_16.2.app
-      
-    - name: Swift version
-      run: swift --version
-      
-    - name: Build
-      run: swift build -v
-      
-    - name: Run tests
-      run: swift test -v
-
-  test-ubuntu:
-    name: Test on Ubuntu
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        swift: ['6.0', '6.0.1', '6.0.2', '6.0.3']
-        ubuntu: ['22.04', '24.04']
-    container:
-      image: swift:${{ matrix.swift }}-${{ matrix.ubuntu }}
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Swift version
-      run: swift --version
-      
-    - name: Build
-      run: swift build -v
-      
-    - name: Run tests
-      run: swift test -v
-
-  lint:
-    name: Swift Format
-    runs-on: ubuntu-latest
-    container:
-      image: swift:latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Install swift-format
-      run: |
-        git clone https://github.com/swiftlang/swift-format.git
-        cd swift-format
-        swift build -c release
-        cp .build/release/swift-format /usr/local/bin/
-        
-    - name: Format check
-      run: |
-        swift-format lint -r Sources/ Tests/ || true
+      - uses: swift-actions/setup-swift@65540b95f51493d65f5e59e97dcef9629ddf11bf
+        with:
+          swift-version: ${{ matrix.swift }}
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build
+      - name: Run tests
+        run: swift test

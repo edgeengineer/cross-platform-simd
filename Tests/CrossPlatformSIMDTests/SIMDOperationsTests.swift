@@ -9,9 +9,12 @@ struct SIMDOperationsTests {
         let b: [Float] = [8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0]
         let expected: [Float] = [9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0]
         
-        let result = simd.addVectors(a, b)
-        
-        #expect(result == expected)
+        switch simd.addVectors(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testAddVectorsDouble() {
@@ -19,9 +22,12 @@ struct SIMDOperationsTests {
         let b: [Double] = [5.0, 4.0, 3.0, 2.0, 1.0]
         let expected: [Double] = [6.0, 6.0, 6.0, 6.0, 6.0]
         
-        let result = simd.addVectors(a, b)
-        
-        #expect(result == expected)
+        switch simd.addVectors(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testDotProductFloat() {
@@ -29,9 +35,12 @@ struct SIMDOperationsTests {
         let b: [Float] = [4.0, 3.0, 2.0, 1.0]
         let expected: Float = 20.0
         
-        let result = simd.dotProduct(a, b)
-        
-        #expect(result == expected)
+        switch simd.dotProduct(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testDotProductDouble() {
@@ -39,9 +48,12 @@ struct SIMDOperationsTests {
         let b: [Double] = [2.0, 2.0, 2.0, 2.0, 2.0]
         let expected: Double = 30.0
         
-        let result = simd.dotProduct(a, b)
-        
-        #expect(result == expected)
+        switch simd.dotProduct(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testMultiplyVectorsFloat() {
@@ -49,9 +61,12 @@ struct SIMDOperationsTests {
         let b: [Float] = [2.0, 2.0, 2.0, 2.0]
         let expected: [Float] = [4.0, 6.0, 8.0, 10.0]
         
-        let result = simd.multiplyVectors(a, b)
-        
-        #expect(result == expected)
+        switch simd.multiplyVectors(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testScaleVectorFloat() {
@@ -59,27 +74,36 @@ struct SIMDOperationsTests {
         let scalar: Float = 2.5
         let expected: [Float] = [2.5, 5.0, 7.5, 10.0, 12.5]
         
-        let result = simd.scaleVector(vector, by: scalar)
-        
-        #expect(result == expected)
+        switch simd.scaleVector(vector, by: scalar) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testSumVectorFloat() {
         let vector: [Float] = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
         let expected: Float = 36.0
         
-        let result = simd.sumVector(vector)
-        
-        #expect(result == expected)
+        switch simd.sumVector(vector) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testSumVectorDouble() {
         let vector: [Double] = [1.5, 2.5, 3.5, 4.5, 5.5]
         let expected: Double = 17.5
         
-        let result = simd.sumVector(vector)
-        
-        #expect(result == expected)
+        switch simd.sumVector(vector) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testMatrixMultiply() {
@@ -96,9 +120,12 @@ struct SIMDOperationsTests {
             [43.0, 50.0]
         ]
         
-        let result = simd.matrixMultiply(a, b)
-        
-        #expect(result == expected)
+        switch simd.matrixMultiply(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
     
     @Test func testLargeVectorOperations() {
@@ -106,20 +133,40 @@ struct SIMDOperationsTests {
         let a = [Float](repeating: 1.0, count: size)
         let b = [Float](repeating: 2.0, count: size)
         
-        let addResult = simd.addVectors(a, b)
-        #expect(addResult.allSatisfy { $0 == 3.0 })
+        switch simd.addVectors(a, b) {
+        case .success(let addResult):
+            #expect(addResult.allSatisfy { $0 == 3.0 })
+        case .failure(let error):
+            Issue.record("Unexpected error in add: \(error)")
+        }
         
-        let multiplyResult = simd.multiplyVectors(a, b)
-        #expect(multiplyResult.allSatisfy { $0 == 2.0 })
+        switch simd.multiplyVectors(a, b) {
+        case .success(let multiplyResult):
+            #expect(multiplyResult.allSatisfy { $0 == 2.0 })
+        case .failure(let error):
+            Issue.record("Unexpected error in multiply: \(error)")
+        }
         
-        let scaleResult = simd.scaleVector(a, by: 5.0)
-        #expect(scaleResult.allSatisfy { $0 == 5.0 })
+        switch simd.scaleVector(a, by: 5.0) {
+        case .success(let scaleResult):
+            #expect(scaleResult.allSatisfy { $0 == 5.0 })
+        case .failure(let error):
+            Issue.record("Unexpected error in scale: \(error)")
+        }
         
-        let dotResult = simd.dotProduct(a, b)
-        #expect(dotResult == Float(size * 2))
+        switch simd.dotProduct(a, b) {
+        case .success(let dotResult):
+            #expect(dotResult == Float(size * 2))
+        case .failure(let error):
+            Issue.record("Unexpected error in dot product: \(error)")
+        }
         
-        let sumResult = simd.sumVector(a)
-        #expect(sumResult == Float(size))
+        switch simd.sumVector(a) {
+        case .success(let sumResult):
+            #expect(sumResult == Float(size))
+        case .failure(let error):
+            Issue.record("Unexpected error in sum: \(error)")
+        }
     }
     
     @Test func testUnalignedVectorSizes() {
@@ -127,8 +174,11 @@ struct SIMDOperationsTests {
         let b: [Float] = [7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0]
         let expected: [Float] = [8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0]
         
-        let result = simd.addVectors(a, b)
-        
-        #expect(result == expected)
+        switch simd.addVectors(a, b) {
+        case .success(let result):
+            #expect(result == expected)
+        case .failure(let error):
+            Issue.record("Unexpected error: \(error)")
+        }
     }
 }
