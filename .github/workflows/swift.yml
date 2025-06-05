@@ -1,21 +1,40 @@
 name: Swift
 
-on: [push]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
-  build:
-    name: Swift ${{ matrix.swift }} on ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        swift: ["6.1"]
-    runs-on: ${{ matrix.os }}
+  test-macos:
+    name: Test on macOS
+    runs-on: macos-latest
     steps:
-      - uses: swift-actions/setup-swift@65540b95f51493d65f5e59e97dcef9629ddf11bf
-        with:
-          swift-version: ${{ matrix.swift }}
-      - uses: actions/checkout@v4
-      - name: Build
-        run: swift build
-      - name: Run tests
-        run: swift test
+    - uses: actions/checkout@v4
+    
+    - name: Swift version
+      run: swift --version
+      
+    - name: Build
+      run: swift build -v
+      
+    - name: Run tests
+      run: swift test -v
+
+  test-ubuntu:
+    name: Test on Ubuntu
+    runs-on: ubuntu-22.04
+    container:
+      image: swift:6.0.3-jammy
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Swift version
+      run: swift --version
+      
+    - name: Build
+      run: swift build -v
+      
+    - name: Run tests
+      run: swift test -v

@@ -8,15 +8,17 @@ A Swift library that provides cross-platform SIMD (Single Instruction, Multiple 
 
 ## Features
 
-- Cross-platform support (macOS, iOS, tvOS, watchOS, visionOS, Linux via GitHub Actions)
-- Optimized vector operations using Swift's built-in SIMD types
-- Support for Float and Double precision
-- Matrix multiplication for both Float and Double
-- Direct SIMD type APIs for zero-overhead operations
-- Swift 6.1 compatible with FoundationEssentials support
-- Safe error handling with Result types
-- Flexible SIMD width support (SIMD4, SIMD8, SIMD16)
-- Comprehensive test coverage including edge cases
+- **Cross-platform support** (macOS, iOS, tvOS, watchOS, visionOS, Linux via GitHub Actions)
+- **Multiple data types**: Float, Double, Int32, Int64 with appropriate SIMD widths
+- **Optimized vector operations** using Swift's built-in SIMD types
+- **Matrix multiplication** for both Float and Double precision
+- **Direct SIMD type APIs** for zero-overhead operations (35x+ faster than arrays in some cases)
+- **Integer operations** including bitwise operations (AND, OR, XOR)
+- **Swift 6.1 compatible** with FoundationEssentials support
+- **Safe error handling** with Result types instead of fatal errors
+- **Flexible SIMD width support** (SIMD2, SIMD4, SIMD8, SIMD16)
+- **Performance optimizations** with adaptive SIMD width selection
+- **Comprehensive test coverage** (72 tests) including edge cases and performance benchmarks
 
 ## Installation
 
@@ -141,9 +143,75 @@ let reconstructed = simd.fromSIMD4Chunks(chunks, remainder: remainder)
 // [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
 ```
 
+### Integer Operations
+
+The library supports integer SIMD operations with wrapping arithmetic:
+
+```swift
+import CrossPlatformSIMD
+
+let simd = SIMDOperations()
+
+// Int32 vector operations
+let a: [Int32] = [1, 2, 3, 4]
+let b: [Int32] = [5, 6, 7, 8]
+
+switch simd.addVectors(a, b) {
+case .success(let result):
+    print(result) // [6, 8, 10, 12]
+case .failure(let error):
+    print("Error: \(error)")
+}
+
+// Bitwise operations
+let x: [Int32] = [0b1111, 0b1010, 0b1100, 0b0011]
+let y: [Int32] = [0b1010, 0b1111, 0b0011, 0b1100]
+
+switch simd.bitwiseAnd(x, y) {
+case .success(let result):
+    print(result) // [10, 10, 0, 0] (in decimal)
+case .failure(let error):
+    print("Error: \(error)")
+}
+
+// Direct SIMD integer operations (zero overhead)
+let va = SIMD4<Int32>(1, 2, 3, 4)
+let vb = SIMD4<Int32>(5, 6, 7, 8)
+let sum = simd.addVectors(va, vb) // SIMD4<Int32>(6, 8, 10, 12)
+```
+
+### Optimized Functions
+
+For performance-critical applications, use the optimized variants:
+
+```swift
+// These functions use adaptive SIMD width selection
+// and are optimized for large arrays
+switch simd.addVectorsOptimized(largeArrayA, largeArrayB) {
+case .success(let result):
+    // Potentially faster for large datasets
+    print("Optimized result: \(result)")
+case .failure(let error):
+    print("Error: \(error)")
+}
+```
+
 ## Performance
 
-This library automatically uses SIMD instructions available on the target platform to accelerate vector operations. Operations are performed in chunks of 4 elements at a time for optimal performance.
+This library automatically uses SIMD instructions available on the target platform to accelerate vector operations. Performance benchmarks show significant improvements:
+
+### Benchmark Results (on Apple Silicon)
+
+- **Direct SIMD4 vs Array-based operations**: 35.82x faster
+- **SIMD vs Naive implementations**: Up to 6x faster for some operations
+- **Adaptive SIMD width**: Automatically uses SIMD8/SIMD16 for larger datasets
+
+### Performance Tips
+
+1. **Use Direct SIMD Types**: For maximum performance, work with `SIMD4<T>` types directly
+2. **Batch Operations**: Process larger arrays to maximize SIMD utilization  
+3. **Choose Appropriate Types**: Use `Float` for single precision, `Double` for higher precision
+4. **Consider Optimized Variants**: Use `*Optimized()` functions for large datasets
 
 ## Testing
 

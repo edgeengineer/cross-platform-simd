@@ -4,6 +4,19 @@ import Testing
 struct SIMDOperationsTests {
     let simd = SIMDOperations()
     
+    @Test func testSIMDOperationsInitialization() {
+        let operations = SIMDOperations()
+        // Test that initialization succeeds and object is usable
+        let testVector: [Float] = [1.0, 2.0, 3.0, 4.0]
+        
+        switch operations.sumVector(testVector) {
+        case .success(let result):
+            #expect(result == 10.0)
+        case .failure(let error):
+            Issue.record("Initialization test failed: \(error)")
+        }
+    }
+    
     @Test func testAddVectorsFloat() {
         let a: [Float] = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]
         let b: [Float] = [8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0]
