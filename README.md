@@ -18,7 +18,7 @@ A Swift library that provides cross-platform SIMD (Single Instruction, Multiple 
 - **Safe error handling** with Result types instead of fatal errors
 - **Flexible SIMD width support** (SIMD2, SIMD4, SIMD8, SIMD16)
 - **Performance optimizations** with adaptive SIMD width selection
-- **Comprehensive test coverage** (72 tests) including edge cases and performance benchmarks
+- **Comprehensive test coverage** (89 tests) including edge cases, performance benchmarks, and property-based testing
 
 ## Installation
 
@@ -215,11 +215,31 @@ This library automatically uses SIMD instructions available on the target platfo
 
 ## Testing
 
+The library includes comprehensive testing with 89 tests covering:
+
+- **Unit tests**: Basic functionality for all operations
+- **Error handling tests**: Edge cases and invalid inputs  
+- **Performance benchmarks**: Comparing different implementations
+- **Property-based tests**: Mathematical properties like commutativity
+- **Cross-platform tests**: Ensuring consistency across platforms
+
 Run tests using Swift's built-in testing framework:
 
 ```bash
 swift test
 ```
+
+### Property-Based Testing
+
+The library includes property-based tests that verify mathematical properties such as:
+
+- **Commutativity**: `a + b == b + a`, `a * b == b * a`
+- **Identity**: `a + 0 == a`, `a * 1 == a`  
+- **Distributivity**: `k * (a + b) == k * a + k * b`
+- **Consistency**: Array-based vs direct SIMD operations produce identical results
+- **Bitwise properties**: AND, OR, XOR commutativity for integer operations
+
+These tests run with randomly generated inputs to catch edge cases that traditional example-based tests might miss.
 
 ## Requirements
 
